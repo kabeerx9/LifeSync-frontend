@@ -1,3 +1,5 @@
+'use client';
+import axiosInstance from '@/axios/axios';
 import { CalendarDateRangePicker } from '@/components/date-range-picker';
 import { Overview } from '@/components/overview';
 import { RecentSales } from '@/components/recent-sales';
@@ -11,8 +13,16 @@ import {
 } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useQuery } from '@tanstack/react-query';
 
-export default function page() {
+export default function Page() {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['todos'],
+    queryFn: () => axiosInstance.get('/todos/').then((res) => res.data)
+  });
+
+  console.log('data is', data);
+
   return (
     <ScrollArea className="h-full">
       <div className="flex-1 space-y-4 p-4 pt-6 md:p-8">
