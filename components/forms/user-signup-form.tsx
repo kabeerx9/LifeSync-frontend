@@ -10,19 +10,28 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import * as z from 'zod';
 
-const formSchema = z.object({
-  username: z.string().min(1),
-  password: z.string().min(4)
-});
+const formSchema = z
+  .object({
+    username: z.string().min(1),
+    email: z.string().email(),
+    password: z.string().min(4),
+    confirmPassword: z.string().min(4)
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword']
+  });
 
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserSignUpForm() {
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
@@ -32,8 +41,38 @@ export default function UserSignUpForm() {
     }
   });
 
+  const signUpMutation = useMutation({
+    mutationFn: async (data: UserFormValue) => {
+      const res = await fetch('http://127.0.0.1:8000/api/auth/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: data.username,
+          email: data.email,
+          password: data.password,
+          password2: data.confirmPassword
+        })
+      });
+      if (!res.ok) {
+        throw new Error('Semething went wrong');
+      }
+      const responseData = await res.json();
+      console.log('Register response is ', responseData);
+      return responseData;
+    },
+    onSuccess: () => {
+      toast.success('Account created successfully');
+      router.push('/dashboard');
+    },
+    onError: (error) => {
+      toast.error('Something went wrong');
+    }
+  });
+
   const onSubmit = async (data: UserFormValue) => {
-    //
+    signUpMutation.mutate(data);
   };
 
   return (
@@ -51,9 +90,27 @@ export default function UserSignUpForm() {
                 <FormLabel>Username</FormLabel>
                 <FormControl>
                   <Input
-                    type="username"
+                    type="text"
                     placeholder="Enter your username..."
-                    disabled={loading}
+                    disabled={signUpMutation.isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    placeholder="Enter your email..."
+                    disabled={signUpMutation.isPending}
                     {...field}
                   />
                 </FormControl>
@@ -71,7 +128,25 @@ export default function UserSignUpForm() {
                   <Input
                     type="password"
                     placeholder="Enter your password..."
-                    disabled={loading}
+                    disabled={signUpMutation.isPending}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confirmPassword"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Confirm Password</FormLabel>
+                <FormControl>
+                  <Input
+                    type="password"
+                    placeholder="Re-Enter your password..."
+                    disabled={signUpMutation.isPending}
                     {...field}
                   />
                 </FormControl>
@@ -80,8 +155,12 @@ export default function UserSignUpForm() {
             )}
           />
 
-          <Button disabled={loading} className="ml-auto w-full" type="submit">
-            Login
+          <Button
+            disabled={signUpMutation.isPending}
+            className="ml-auto w-full"
+            type="submit"
+          >
+            Sign Up
           </Button>
         </form>
       </Form>
@@ -90,8 +169,11 @@ export default function UserSignUpForm() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
-            Or Sign Up
+          <span
+            onClick={() => router.push('/login')}
+            className="cursor-pointer bg-background px-2 text-muted-foreground"
+          >
+            Or Login
           </span>
         </div>
       </div>
