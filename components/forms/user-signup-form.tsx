@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import Cookies from 'js-cookie';
 
 const formSchema = z
   .object({
@@ -59,7 +60,12 @@ export default function UserSignUpForm() {
         throw new Error('Semething went wrong');
       }
       const responseData = await res.json();
-      console.log('Register response is ', responseData);
+
+      Cookies.set('accessToken', responseData.token.access, {
+        expires: 1 / 24
+      });
+      Cookies.set('refreshToken', responseData.token.refresh, { expires: 1 });
+
       return responseData;
     },
     onSuccess: () => {
