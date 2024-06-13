@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
+import Cookies from 'js-cookie';
 
 const formSchema = z.object({
   username: z.string().min(1),
@@ -50,6 +51,9 @@ export default function UserLoginForm() {
         throw new Error('Invalid credentials');
       }
       const responseData = await res.json();
+
+      Cookies.set('accessToken', responseData.access, { expires: 1 / 24 });
+      Cookies.set('refreshToken', responseData.refresh, { expires: 1 });
 
       return responseData;
     },

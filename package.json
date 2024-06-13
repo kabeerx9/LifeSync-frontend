@@ -47,6 +47,7 @@
     "date-fns": "^2.30.0",
     "eslint": "8.48.0",
     "eslint-config-next": "^14.0.1",
+    "js-cookie": "^3.0.5",
     "lucide-react": "^0.291.0",
     "next": "^14.2.3",
     "next-themes": "^0.2.1",
@@ -70,6 +71,7 @@
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "^5.43.1",
+    "@types/js-cookie": "^3.0.6",
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^6.11.0",
     "prettier": "3.0.3",

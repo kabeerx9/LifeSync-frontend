@@ -1,5 +1,5 @@
-// lib/axios.js
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -10,8 +10,18 @@ const axiosInstance = axios.create({
 // Function to refresh the token
 const refreshToken = async () => {
   try {
-    const response = await axiosInstance.post('/api/token/refresh/');
-    return response.data;
+    const refreshToken = Cookies.get('refreshToken');
+    const response = await axiosInstance.post('/auth/token/refresh/', {
+      refresh: refreshToken
+    });
+    console.log('Token refreshed:', response.data.access);
+    const { access, refresh } = response.data;
+
+    // Update the access token in cookies
+    Cookies.set('accessToken', access, { expires: 1 / 24 }); // 1 hour
+    Cookies.set('refreshToken', refresh, { expires: 1 }); // 1 day
+
+    return access;
   } catch (error) {
     console.error('Error refreshing token:', error);
     throw error;
@@ -21,7 +31,10 @@ const refreshToken = async () => {
 // Request interceptor
 axiosInstance.interceptors.request.use(
   (config) => {
-    // You can add any request modifications here if needed
+    const accessToken = Cookies.get('accessToken');
+    if (accessToken) {
+      config.headers['Authorization'] = `Bearer ${accessToken}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -34,22 +47,27 @@ axiosInstance.interceptors.response.use(
     const originalRequest = error.config;
 
     // If the error is due to an expired token (status 401) and we haven't tried to refresh yet
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         // Attempt to refresh the token
-        await refreshToken();
+        const newAccessToken = await refreshToken();
+
+        // Update the Authorization header with the new token
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
 
         // Retry the original request
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        // If refreshing fails, redirect to login or dispatch a logout action
+        // If refreshing fails, clear tokens and redirect to login
         console.error('Token refresh failed:', refreshError);
 
-        // You can dispatch a logout action here or redirect to login
-        // For example:
-        // window.location.href = '/login';
+        Cookies.remove('accessToken');
+        Cookies.remove('refreshToken');
+
+        // Redirect to login page
+        window.location.href = '/login';
 
         return Promise.reject(refreshError);
       }

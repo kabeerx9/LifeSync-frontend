@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Cookies from 'js-cookie';
+
 export function UserNav() {
   const router = useRouter();
   return (
@@ -56,6 +58,8 @@ export function UserNav() {
         <DropdownMenuItem
           onClick={() => {
             router.push('/login');
+            Cookies.remove('accessToken');
+            Cookies.remove('refreshToken');
           }}
         >
           Log out
