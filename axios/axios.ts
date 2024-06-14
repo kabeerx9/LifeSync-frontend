@@ -48,11 +48,6 @@ axiosInstance.interceptors.response.use(
   },
   async (error) => {
     if (error.response?.status !== 200) {
-      console.log('error.response.status is ', error.response.status);
-      console.log(
-        'error.response.data.message is ',
-        error.response.data.message
-      );
       toast.error(error.response.data.message || 'An error occurred');
     }
 

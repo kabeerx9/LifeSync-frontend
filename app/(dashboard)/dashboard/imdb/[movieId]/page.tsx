@@ -16,6 +16,7 @@ import DeleteMovieDialog from './_components/DeleteMovieDialog';
 import { useState } from 'react';
 import EditMovieDialog from './_components/EditMovieDialog';
 import ReviewList from './_components/ReviewList';
+import { useUser } from '@/hooks/useUser';
 
 type Props = {
   params: {

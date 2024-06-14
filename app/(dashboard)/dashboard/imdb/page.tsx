@@ -13,6 +13,7 @@ export type Review = {
   rating: number;
   comment: string;
   created_at: string;
+  id: string;
 };
 
 export type TMovie = {
