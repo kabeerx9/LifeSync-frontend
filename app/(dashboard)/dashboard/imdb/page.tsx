@@ -2,10 +2,11 @@
 import axiosInstance from '@/axios/axios';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
-import AddMovieDialog from './_components/AddMovieDialog';
-import { useState } from 'react';
-import MovieCard from './_components/MovieCard';
 import { Loader } from 'lucide-react';
+import { useState } from 'react';
+import AddMovieDialog from './_components/AddMovieDialog';
+import MovieCard from './_components/MovieCard';
+import { useUser } from '@/hooks/useUser';
 
 export type Review = {
   movie: any;
@@ -24,21 +25,19 @@ export type TMovie = {
   reviews: Review[];
   release_year: number;
   imageUrl?: string;
+  avg_rating: number;
 };
 
 export default function Imdb() {
   const [isAddMoiveDialogOpen, setIsAddMovieDialogOpen] = useState(false);
+  const { is_staff } = useUser();
 
   const fetchMovies = async () => {
     const res = await axiosInstance.get('/movies/');
     return res.data;
   };
 
-  const {
-    data: moviesData,
-    isLoading,
-    error
-  } = useQuery<TMovie[]>({
+  const { data: moviesData, isLoading } = useQuery<TMovie[]>({
     queryFn: fetchMovies,
     queryKey: ['movies'],
     staleTime: 1000 * 60 * 5
@@ -57,6 +56,7 @@ export default function Imdb() {
               onClick={() => {
                 setIsAddMovieDialogOpen(true);
               }}
+              disabled={!is_staff}
             >
               Add Movie
             </Button>
@@ -76,6 +76,8 @@ export default function Imdb() {
                 description={movie.description}
                 release_year={movie.release_year}
                 imageUrl={movie.imageUrl}
+                avg_rating={movie.avg_rating}
+                numberOfReviews={movie.reviews.length}
               />
             ))}
           </div>

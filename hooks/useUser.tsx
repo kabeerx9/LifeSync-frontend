@@ -8,6 +8,7 @@ type TUser = {
   user_id: number;
   username: string;
   email: string;
+  is_staff: string;
 };
 
 export function useUser() {
@@ -16,10 +17,12 @@ export function useUser() {
     const access_token = Cookies.get('accessToken');
     if (access_token) {
       const user = jwtDecode<TUser>(access_token);
+      console.log('user is ', user);
       setUser({
         user_id: user.user_id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        is_staff: user.is_staff
       });
     }
   }, []);
@@ -27,6 +30,7 @@ export function useUser() {
   return {
     user_id: user?.user_id,
     username: user?.username,
-    email: user?.email
+    email: user?.email,
+    is_staff: user?.is_staff
   };
 }

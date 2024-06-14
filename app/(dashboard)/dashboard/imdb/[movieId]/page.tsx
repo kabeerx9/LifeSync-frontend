@@ -11,12 +11,13 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { TMovie } from '../page';
 import Image from 'next/image';
-import { Edit, Trash } from 'lucide-react';
+import { Edit, Star, Trash } from 'lucide-react';
 import DeleteMovieDialog from './_components/DeleteMovieDialog';
 import { useState } from 'react';
 import EditMovieDialog from './_components/EditMovieDialog';
 import ReviewList from './_components/ReviewList';
 import { useUser } from '@/hooks/useUser';
+import { Button } from '@/components/ui/button';
 
 type Props = {
   params: {
@@ -27,6 +28,8 @@ type Props = {
 const MovieDetail = ({ params: { movieId } }: Props) => {
   const [isDeleteMovieDialogOpen, setIsDeleteMovieDialogOpen] = useState(false);
   const [isEditMovieDialogOpen, setIsEditMovieDialogOpen] = useState(false);
+
+  const { is_staff } = useUser();
 
   const fetchMovieDetail = async () => {
     const res = await axiosInstance.post('/movies/movie-detail/', {
@@ -67,20 +70,36 @@ const MovieDetail = ({ params: { movieId } }: Props) => {
           <CardHeader>
             <CardTitle>
               <div className="flex items-center justify-between">
-                <span>{movieData?.title}</span>
+                <div className="flex items-center gap-2">
+                  {movieData?.title} :
+                  <div className="flex items-center gap-1">
+                    {movieData?.avg_rating}
+                    <Star
+                      fill="currentColor"
+                      className="text-red-500 dark:text-yellow-500"
+                      size={16}
+                    />
+                  </div>
+                </div>
                 <div className="flex gap-5">
-                  <Edit
+                  <Button
+                    disabled={!is_staff}
                     onClick={() => {
                       setIsEditMovieDialogOpen(true);
                     }}
-                    className="cursor-pointer "
-                  />
-                  <Trash
+                    size={'icon'}
+                  >
+                    <Edit className="cursor-pointer " />
+                  </Button>
+                  <Button
+                    disabled={!is_staff}
                     onClick={() => {
                       setIsDeleteMovieDialogOpen(true);
                     }}
-                    className="cursor-pointer text-red-300 "
-                  />
+                    size={'icon'}
+                  >
+                    <Trash className="cursor-pointer text-red-500 " />
+                  </Button>
                 </div>
               </div>
             </CardTitle>

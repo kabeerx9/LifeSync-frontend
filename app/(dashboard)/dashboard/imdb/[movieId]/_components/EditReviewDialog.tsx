@@ -20,11 +20,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useParams } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { toast } from 'sonner';
-import { useParams } from 'next/navigation';
+import { z } from 'zod';
 
 type Props = {
   isEditReviewModalOpen: boolean;

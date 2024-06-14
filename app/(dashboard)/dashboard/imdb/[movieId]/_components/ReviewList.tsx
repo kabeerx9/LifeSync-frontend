@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardDescription,
@@ -5,15 +6,14 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
-import React, { useState } from 'react';
-import { Review } from '../../page';
-import { formatDateTime } from '@/utils/date';
-import { Edit, Edit2, PlusIcon, Star, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import AddReviewDialog from './AddReviewDialog';
 import { useUser } from '@/hooks/useUser';
-import EditReviewDialog from './EditReviewDialog';
+import { formatDateTime } from '@/utils/date';
+import { Edit, PlusIcon, Star, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Review } from '../../page';
+import AddReviewDialog from './AddReviewDialog';
 import DeleteReviewDialog from './DeleteReviewDialog';
+import EditReviewDialog from './EditReviewDialog';
 
 type Props = {
   reviews: Review[];
@@ -27,7 +27,7 @@ const ReviewList = ({ reviews }: Props) => {
 
   const [selectedReview, setSelectedReview] = useState<Review | null>(null);
 
-  const { username, email } = useUser();
+  const { username } = useUser();
 
   return (
     <div className=" w-full space-y-5 ">
@@ -64,6 +64,7 @@ const ReviewList = ({ reviews }: Props) => {
                 <span className="flex gap-x-2">
                   {review.user} : {review.rating}{' '}
                   <Star
+                    fill="currentColor"
                     className="text-red-500 dark:text-yellow-500"
                     size={16}
                   />

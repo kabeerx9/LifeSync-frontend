@@ -6,10 +6,9 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import { Star } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-
-import React from 'react';
 
 type Props = {
   title: string;
@@ -18,6 +17,8 @@ type Props = {
   description: string;
   release_year: number;
   imageUrl?: string;
+  avg_rating: number;
+  numberOfReviews: number;
 };
 
 const MovieCard = ({
@@ -26,7 +27,9 @@ const MovieCard = ({
   genre,
   description,
   release_year,
-  imageUrl
+  imageUrl,
+  avg_rating,
+  numberOfReviews
 }: Props) => {
   const router = useRouter();
   return (
@@ -37,7 +40,17 @@ const MovieCard = ({
       className="flex cursor-pointer flex-col justify-between"
     >
       <CardHeader>
-        <CardTitle className="truncate text-lg">{title}</CardTitle>
+        <CardTitle className="flex gap-3 truncate text-lg">
+          {title} :
+          <div className="flex items-center gap-1">
+            {numberOfReviews === 0 ? 'N/A' : avg_rating}
+            <Star
+              fill="currentColor"
+              className="text-red-500 dark:text-yellow-500"
+              size={16}
+            />
+          </div>
+        </CardTitle>
 
         <CardDescription className="truncate">{description}</CardDescription>
       </CardHeader>
