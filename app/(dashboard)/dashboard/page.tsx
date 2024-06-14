@@ -16,12 +16,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery } from '@tanstack/react-query';
 
 export default function Page() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ['todos'],
-    queryFn: () => axiosInstance.get('/todos/').then((res) => res.data)
-  });
+  // const { data, isLoading, error } = useQuery({
+  //   queryKey: ['todos'],
+  //   queryFn: () => axiosInstance.get('/todos/').then((res) => res.data)
+  // });
 
-  console.log('data is', data);
+  // console.log('data is', data);
 
   return (
     <ScrollArea className="h-full">

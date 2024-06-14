@@ -147,5 +147,11 @@ export const navItems: NavItem[] = [
     href: '/',
     icon: 'login',
     label: 'login'
+  },
+  {
+    title: 'IMDB',
+    href: '/dashboard/imdb',
+    icon: 'settings',
+    label: 'IMDB'
   }
 ];
