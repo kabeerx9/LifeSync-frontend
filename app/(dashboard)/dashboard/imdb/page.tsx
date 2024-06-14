@@ -7,12 +7,20 @@ import { useState } from 'react';
 import MovieCard from './_components/MovieCard';
 import { Loader } from 'lucide-react';
 
+export type Review = {
+  movie: any;
+  reviewer: any;
+  rating: number;
+  comment: string;
+  created_at: string;
+};
+
 export type TMovie = {
   id: number;
   title: string;
   genre: string;
   description: string;
-  review: any[];
+  reviews: Review[];
   release_year: number;
   imageUrl?: string;
 };

@@ -11,9 +11,11 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { TMovie } from '../page';
 import Image from 'next/image';
-import { Trash } from 'lucide-react';
+import { Edit, Trash } from 'lucide-react';
 import DeleteMovieDialog from './_components/DeleteMovieDialog';
 import { useState } from 'react';
+import EditMovieDialog from './_components/EditMovieDialog';
+import ReviewList from './_components/ReviewList';
 
 type Props = {
   params: {
@@ -23,6 +25,7 @@ type Props = {
 
 const MovieDetail = ({ params: { movieId } }: Props) => {
   const [isDeleteMovieDialogOpen, setIsDeleteMovieDialogOpen] = useState(false);
+  const [isEditMovieDialogOpen, setIsEditMovieDialogOpen] = useState(false);
 
   const fetchMovieDetail = async () => {
     const res = await axiosInstance.post('/movies/movie-detail/', {
@@ -38,24 +41,46 @@ const MovieDetail = ({ params: { movieId } }: Props) => {
     staleTime: 1000 * 60 * 5
   });
 
-  console.log('this movie data is ', movieData);
-
   return (
-    <>
+    <div className="no-scrollbar h-full w-full space-y-5 overflow-auto p-5">
       <DeleteMovieDialog
         movieId={movieId}
         isDeleteMovieDialogOpen={isDeleteMovieDialogOpen}
         setIsDeleteMovieDialogOpen={setIsDeleteMovieDialogOpen}
       />
-      <div className="h-full w-full p-5">
+      <EditMovieDialog
+        movieId={movieId}
+        isEditMovieDialogOpen={isEditMovieDialogOpen}
+        setIsEditMovieDialogOpen={setIsEditMovieDialogOpen}
+        title={movieData?.title || ''}
+        description={movieData?.description || ''}
+        genre={movieData?.genre || ''}
+        release_year={movieData?.release_year || 0}
+        imageUrl={movieData?.imageUrl || ''}
+      />
+
+      {/* MOVIE DETAIL  */}
+
+      <div className=" w-full p-5">
         <Card>
           <CardHeader>
             <CardTitle>
               <div className="flex items-center justify-between">
                 <span>{movieData?.title}</span>
-                <Trash onClick={()=>{
-                  setIsDeleteMovieDialogOpen(true);
-                }} className="cursor-pointer text-red-500" />
+                <div className="flex gap-5">
+                  <Edit
+                    onClick={() => {
+                      setIsEditMovieDialogOpen(true);
+                    }}
+                    className="cursor-pointer "
+                  />
+                  <Trash
+                    onClick={() => {
+                      setIsDeleteMovieDialogOpen(true);
+                    }}
+                    className="cursor-pointer text-red-300 "
+                  />
+                </div>
               </div>
             </CardTitle>
             <CardDescription>{movieData?.description}</CardDescription>
@@ -78,7 +103,11 @@ const MovieDetail = ({ params: { movieId } }: Props) => {
           </CardFooter>
         </Card>
       </div>
-    </>
+
+      {/* REVIEW LIST */}
+      <div className="text-center text-3xl font-semibold">Reviews : </div>
+      <ReviewList reviews={movieData?.reviews || []} />
+    </div>
   );
 };
 
