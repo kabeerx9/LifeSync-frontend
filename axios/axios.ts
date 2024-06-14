@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { toast } from 'sonner';
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -42,8 +43,19 @@ axiosInstance.interceptors.request.use(
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   async (error) => {
+    if (error.response?.status !== 200) {
+      console.log('error.response.status is ', error.response.status);
+      console.log(
+        'error.response.data.message is ',
+        error.response.data.message
+      );
+      toast.error(error.response.data.message || 'An error occurred');
+    }
+
     const originalRequest = error.config;
 
     // If the error is due to an expired token (status 401) and we haven't tried to refresh yet

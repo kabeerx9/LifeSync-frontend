@@ -9,7 +9,7 @@ import { Loader } from 'lucide-react';
 
 export type Review = {
   movie: any;
-  reviewer: any;
+  user: any;
   rating: number;
   comment: string;
   created_at: string;
