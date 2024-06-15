@@ -77,6 +77,9 @@ const EditReviewDialog = ({
       queryClient.invalidateQueries({
         queryKey: ['movieDetail', movieId]
       });
+      queryClient.invalidateQueries({
+        queryKey: ['movies']
+      });
       toast.success('Review Edited successfully');
       setIsEditReviewModalOpen(false);
     }

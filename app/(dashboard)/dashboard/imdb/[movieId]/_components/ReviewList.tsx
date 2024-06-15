@@ -56,7 +56,7 @@ const ReviewList = ({ reviews }: Props) => {
           Add Review <PlusIcon />
         </Button>
       </div>
-      <div className="grid w-full grid-cols-2 gap-5 lg:grid-cols-3">
+      <div className="grid w-full grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
         {reviews?.map((review, index) => (
           <Card key={index} className="flex flex-col justify-between">
             <CardHeader>

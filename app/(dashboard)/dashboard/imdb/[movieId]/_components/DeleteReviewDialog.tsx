@@ -32,6 +32,9 @@ const DeleteReviewDialog = ({
       queryClient.invalidateQueries({
         queryKey: ['movieDetail', movieId]
       });
+      queryClient.invalidateQueries({
+        queryKey: ['movies']
+      });
       setIsDeleteReviewDialogOpen(false);
     }
   });

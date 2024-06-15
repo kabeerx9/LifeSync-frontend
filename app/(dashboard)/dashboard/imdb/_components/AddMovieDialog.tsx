@@ -69,6 +69,7 @@ const AddMovieDialog = ({
       return res.data;
     },
     onSuccess: () => {
+      form.reset();
       queryClient.invalidateQueries({
         queryKey: ['movies']
       });

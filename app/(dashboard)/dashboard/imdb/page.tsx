@@ -26,6 +26,7 @@ export type TMovie = {
   release_year: number;
   imageUrl?: string;
   avg_rating: number;
+  is_watchlisted: boolean;
 };
 
 export default function Imdb() {
@@ -78,6 +79,7 @@ export default function Imdb() {
                 imageUrl={movie.imageUrl}
                 avg_rating={movie.avg_rating}
                 numberOfReviews={movie.reviews.length}
+                is_watchlisted={movie.is_watchlisted}
               />
             ))}
           </div>

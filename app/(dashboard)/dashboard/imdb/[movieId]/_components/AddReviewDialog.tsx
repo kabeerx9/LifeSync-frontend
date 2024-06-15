@@ -63,8 +63,12 @@ const AddReviewDialog = ({
       return res.data;
     },
     onSuccess: () => {
+      form.reset();
       queryClient.invalidateQueries({
         queryKey: ['movieDetail', movieId]
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['movies']
       });
       toast.success('Review Added successfully');
       setIsAddReviewModalOpen(false);

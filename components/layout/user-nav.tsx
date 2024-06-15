@@ -14,8 +14,10 @@ import {
 import { User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import { useUser } from '@/hooks/useUser';
 
 export function UserNav() {
+  const { email, username } = useUser();
   const router = useRouter();
   return (
     <DropdownMenu>
@@ -32,9 +34,9 @@ export function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">Temp username</p>
+            <p className="text-sm font-medium leading-none">{username}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              Temp email
+              {email}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -57,7 +59,8 @@ export function UserNav() {
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
-            router.push('/login');
+            // to remove query cache
+            window.location.href = '/login';
             Cookies.remove('accessToken');
             Cookies.remove('refreshToken');
           }}
