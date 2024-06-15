@@ -2,8 +2,8 @@
 import axiosInstance from '@/axios/axios';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
-import { Loader } from 'lucide-react';
-import { useState } from 'react';
+import { Loader, Plus } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import AddMovieDialog from './_components/AddMovieDialog';
 import MovieCard from './_components/MovieCard';
 import { useUser } from '@/hooks/useUser';
@@ -30,40 +30,81 @@ export type TMovie = {
   is_watchlisted: boolean;
 };
 
+export type TPaginatedMovies = {
+  count: number;
+  next: string;
+  previous: string;
+  results: TMovie[];
+};
+
 export default function Imdb() {
   const [isAddMoiveDialogOpen, setIsAddMovieDialogOpen] = useState(false);
   const { is_staff } = useUser();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPageNumber, setCurrentPageNumber] = useState(1);
 
   const fetchMovies = async () => {
-    const res = await axiosInstance.get('/movies/?title=the');
+    const res = await axiosInstance.get(
+      '/movies/?page=' + currentPageNumber + '&title=' + searchQuery
+    );
+
+    // this .results comes from the pagination thing .
     return res.data;
   };
 
-  const { data: moviesData, isLoading } = useQuery<TMovie[]>({
-    queryFn: fetchMovies,
-    queryKey: ['movies'],
-    staleTime: 1000 * 60 * 5
-  });
+  const { data, isLoading, refetch, isRefetching } = useQuery<TPaginatedMovies>(
+    {
+      queryFn: fetchMovies,
+      queryKey: ['movies'],
+      staleTime: 1000 * 60 * 5
+    }
+  );
+
+  const moviesData: TMovie[] = useMemo(() => data?.results || [], [data]);
+
+  const handleNextPage = () => {
+    if (data?.next) {
+      setCurrentPageNumber((prev) => prev + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (data?.previous) {
+      setCurrentPageNumber((prev) => prev - 1);
+    }
+  };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      refetch();
+    }, 300);
+
+    return () => clearTimeout(timeout);
+  }, [searchQuery]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
+  useEffect(() => {
+    refetch();
+  }, [currentPageNumber]);
+
   return (
     <>
-      {isLoading ? (
-        <div className="flex h-full w-full items-center justify-center">
+      {isLoading || isRefetching ? (
+        <div className="flex h-full w-full items-center justify-center ">
           <Loader className="h-10 w-10" />
         </div>
       ) : (
         <div className="no-scrollbar h-full w-full space-y-2 overflow-auto p-5">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col items-start justify-between md:flex-row md:items-center">
             <Input
               placeholder="Search for a movie"
               value={searchQuery}
               onChange={handleChange}
+              autoFocus
             />
             <Button
               onClick={() => {
@@ -71,7 +112,8 @@ export default function Imdb() {
               }}
               disabled={!is_staff}
             >
-              Add Movie
+              Add
+              <Plus />
             </Button>
           </div>
           <AddMovieDialog
@@ -94,6 +136,14 @@ export default function Imdb() {
                 is_watchlisted={movie.is_watchlisted}
               />
             ))}
+          </div>
+          <div className="flex w-full items-center justify-between">
+            <Button onClick={handlePreviousPage} disabled={!data?.previous}>
+              Previous
+            </Button>
+            <Button onClick={handleNextPage} disabled={!data?.next}>
+              Next
+            </Button>
           </div>
         </div>
       )}
