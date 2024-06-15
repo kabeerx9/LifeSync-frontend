@@ -7,6 +7,7 @@ import { useState } from 'react';
 import AddMovieDialog from './_components/AddMovieDialog';
 import MovieCard from './_components/MovieCard';
 import { useUser } from '@/hooks/useUser';
+import { Input } from '@/components/ui/input';
 
 export type Review = {
   movie: any;
@@ -33,8 +34,10 @@ export default function Imdb() {
   const [isAddMoiveDialogOpen, setIsAddMovieDialogOpen] = useState(false);
   const { is_staff } = useUser();
 
+  const [searchQuery, setSearchQuery] = useState('');
+
   const fetchMovies = async () => {
-    const res = await axiosInstance.get('/movies/');
+    const res = await axiosInstance.get('/movies/?title=the');
     return res.data;
   };
 
@@ -44,6 +47,10 @@ export default function Imdb() {
     staleTime: 1000 * 60 * 5
   });
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <>
       {isLoading ? (
@@ -52,7 +59,12 @@ export default function Imdb() {
         </div>
       ) : (
         <div className="no-scrollbar h-full w-full space-y-2 overflow-auto p-5">
-          <div className="flex flex-row-reverse">
+          <div className="flex items-center justify-between">
+            <Input
+              placeholder="Search for a movie"
+              value={searchQuery}
+              onChange={handleChange}
+            />
             <Button
               onClick={() => {
                 setIsAddMovieDialogOpen(true);
