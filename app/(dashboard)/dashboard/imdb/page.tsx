@@ -1,13 +1,20 @@
 'use client';
 import axiosInstance from '@/axios/axios';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useUser } from '@/hooks/useUser';
 import { useQuery } from '@tanstack/react-query';
 import { Loader, Plus } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import AddMovieDialog from './_components/AddMovieDialog';
 import MovieCard from './_components/MovieCard';
-import { useUser } from '@/hooks/useUser';
-import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select';
 
 export type Review = {
   movie: any;
@@ -42,11 +49,17 @@ export default function Imdb() {
   const { is_staff } = useUser();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [orderingQuery, setOrderingQuery] = useState('');
   const [currentPageNumber, setCurrentPageNumber] = useState(1);
 
   const fetchMovies = async () => {
     const res = await axiosInstance.get(
-      '/movies/?page=' + currentPageNumber + '&title=' + searchQuery
+      '/movies/?page=' +
+        currentPageNumber +
+        '&title=' +
+        searchQuery +
+        '&ordering=' +
+        orderingQuery
     );
 
     // this .results comes from the pagination thing .
@@ -77,11 +90,12 @@ export default function Imdb() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
+      setCurrentPageNumber(1);
       refetch();
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [searchQuery]);
+  }, [searchQuery, orderingQuery]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
@@ -99,13 +113,33 @@ export default function Imdb() {
         </div>
       ) : (
         <div className="no-scrollbar h-full w-full space-y-2 overflow-auto p-5">
-          <div className="flex flex-col items-start justify-between md:flex-row md:items-center">
+          <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center md:gap-5">
             <Input
-              placeholder="Search for a movie"
+              placeholder="Search for a movie (using django-filter in backend)"
               value={searchQuery}
               onChange={handleChange}
               autoFocus
             />
+
+            <Select
+              onValueChange={(value) => {
+                setOrderingQuery(value);
+              }}
+            >
+              <SelectTrigger className="w-full md:w-1/3">
+                <SelectValue placeholder="Order By" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="title">Title</SelectItem>
+                <SelectItem value="avg_rating">Rating Ascending</SelectItem>
+                <SelectItem value="-avg_rating">Rating Desceding</SelectItem>
+                <SelectItem value="genre">Genre</SelectItem>
+                <SelectItem value="release_year">Release Year (Asc)</SelectItem>
+                <SelectItem value="-release_year">
+                  Release Year (Desc)
+                </SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               onClick={() => {
                 setIsAddMovieDialogOpen(true);
