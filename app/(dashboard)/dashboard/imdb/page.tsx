@@ -69,7 +69,7 @@ export default function Imdb() {
   const { data, isLoading, refetch, isRefetching } = useQuery<TPaginatedMovies>(
     {
       queryFn: fetchMovies,
-      queryKey: ['movies'],
+      queryKey: ['movies', orderingQuery, currentPageNumber],
       staleTime: 1000 * 60 * 5
     }
   );
@@ -95,15 +95,11 @@ export default function Imdb() {
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [searchQuery, orderingQuery]);
+  }, [searchQuery]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
-
-  useEffect(() => {
-    refetch();
-  }, [currentPageNumber]);
 
   return (
     <>
