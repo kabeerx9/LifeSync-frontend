@@ -44,18 +44,21 @@ export default function UserSignUpForm() {
 
   const signUpMutation = useMutation({
     mutationFn: async (data: UserFormValue) => {
-      const res = await fetch('http://127.0.0.1:8000/api/auth/register/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: data.username,
-          email: data.email,
-          password: data.password,
-          password2: data.confirmPassword
-        })
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + '/auth/register/',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: data.username,
+            email: data.email,
+            password: data.password,
+            password2: data.confirmPassword
+          })
+        }
+      );
       if (!res.ok) {
         throw new Error('Semething went wrong');
       }

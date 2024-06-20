@@ -5,7 +5,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,  
+  FormLabel,
   FormMessage
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -37,16 +37,19 @@ export default function UserLoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: UserFormValue) => {
-      const res = await fetch('http://127.0.0.1:8000/api/auth/token/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          username: data.username,
-          password: data.password
-        })
-      });
+      const res = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + '/auth/token/',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            username: data.username,
+            password: data.password
+          })
+        }
+      );
       if (!res.ok) {
         throw new Error('Invalid credentials');
       }
