@@ -57,9 +57,7 @@ const TodoCard = ({
   return (
     <Card>
       <CardHeader className={cn('', status !== 'TODO' && 'line-through')}>
-        <CardTitle>
-          {id} : {title}
-        </CardTitle>
+        <CardTitle>{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent className="flex justify-between">
