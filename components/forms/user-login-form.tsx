@@ -37,19 +37,16 @@ export default function UserLoginForm() {
 
   const loginMutation = useMutation({
     mutationFn: async (data: UserFormValue) => {
-      const res = await fetch(
-        process.env.NEXT_PUBLIC_API_URL + '/auth/token/',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            username: data.username,
-            password: data.password
-          })
-        }
-      );
+      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + 'auth/token/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          username: data.username,
+          password: data.password
+        })
+      });
       if (!res.ok) {
         throw new Error('Invalid credentials');
       }

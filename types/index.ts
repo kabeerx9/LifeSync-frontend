@@ -30,3 +30,11 @@ export interface FooterItem {
 export type MainNavItem = NavItemWithOptionalChildren;
 
 export type SidebarNavItem = NavItemWithChildren;
+
+export interface Todo {
+  id: number;
+  title: string;
+  description: string;
+  status: string;
+  due_date?: string;
+}

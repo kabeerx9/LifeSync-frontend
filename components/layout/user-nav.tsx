@@ -11,14 +11,12 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { User } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
 import { useUser } from '@/hooks/useUser';
+import Cookies from 'js-cookie';
+import { User } from 'lucide-react';
 
 export function UserNav() {
   const { email, username } = useUser();
-  const router = useRouter();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
