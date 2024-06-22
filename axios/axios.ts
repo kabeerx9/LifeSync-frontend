@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
-  timeout: 5000,
+  timeout: 10000,
   withCredentials: true // Important for sending cookies
 });
 
@@ -15,7 +15,6 @@ const refreshToken = async () => {
     const response = await axiosInstance.post('/auth/token/refresh/', {
       refresh: refreshToken
     });
-    console.log('Token refreshed:', response.data.access);
     const { access, refresh } = response.data;
 
     // Update the access token in cookies
@@ -24,7 +23,6 @@ const refreshToken = async () => {
 
     return access;
   } catch (error) {
-    console.error('Error refreshing token:', error);
     throw error;
   }
 };
