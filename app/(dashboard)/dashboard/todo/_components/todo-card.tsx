@@ -7,11 +7,13 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card';
+import { useMutationContext } from '@/context/mutation-context';
 import { cn } from '@/lib/utils';
 import { Todo } from '@/types';
 import { formatDateTime } from '@/utils/date';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CheckCircle, Circle, Edit, Loader2, Trash } from 'lucide-react';
+import { useRef } from 'react';
 import { toast } from 'sonner';
 
 type Props = Partial<Todo> & {
@@ -26,6 +28,8 @@ const TodoCard = ({
   due_date,
   handleTodoUpdate
 }: Props) => {
+  const { incrementPending, decrementPending, getPendingCount } =
+    useMutationContext();
   const queryClient = useQueryClient();
 
   const updateTodoStatusMutation = useMutation({
@@ -33,11 +37,42 @@ const TodoCard = ({
       const res = await axiosInstance.put('tasks/update/' + id);
       return res.data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onMutate: async () => {
+      // add the mutation to the pending list
+      incrementPending();
+
+      await queryClient.cancelQueries({
         queryKey: ['todos']
       });
-      toast.success('Todo status updated');
+
+      // snapshot of the previous values
+      const previousTodos = queryClient.getQueryData(['todos']);
+
+      // optimistically update to the new value
+
+      queryClient.setQueryData(['todos'], (old: Todo[]) => {
+        return old?.map((todo) =>
+          todo.id === id
+            ? { ...todo, status: todo.status === 'TODO' ? 'DONE' : 'TODO' }
+            : todo
+        );
+      });
+
+      return { previousTodos };
+    },
+    onError: (err, _, context) => {
+      queryClient.setQueryData(['todos'], context?.previousTodos);
+      toast.error('Failed to update todo status');
+    },
+    onSettled: () => {
+      // remove the mutation from the pending list
+      decrementPending();
+
+      if (getPendingCount() === 0) {
+        queryClient.invalidateQueries({
+          queryKey: ['todos']
+        });
+      }
     }
   });
 
