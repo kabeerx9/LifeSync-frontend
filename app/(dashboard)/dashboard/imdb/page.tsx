@@ -103,49 +103,47 @@ export default function Imdb() {
 
   return (
     <>
+      <div className="flex flex-col items-start justify-between gap-3 p-5 md:flex-row md:items-center md:gap-5">
+        <Input
+          placeholder="Search for a movie (using django-filter in backend)"
+          value={searchQuery}
+          onChange={handleChange}
+          autoFocus
+        />
+
+        <Select
+          onValueChange={(value) => {
+            setOrderingQuery(value);
+          }}
+        >
+          <SelectTrigger className="w-full md:w-1/3">
+            <SelectValue placeholder="Order By" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="title">Title</SelectItem>
+            <SelectItem value="avg_rating">Rating Ascending</SelectItem>
+            <SelectItem value="-avg_rating">Rating Desceding</SelectItem>
+            <SelectItem value="genre">Genre</SelectItem>
+            <SelectItem value="release_year">Release Year (Asc)</SelectItem>
+            <SelectItem value="-release_year">Release Year (Desc)</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button
+          onClick={() => {
+            setIsAddMovieDialogOpen(true);
+          }}
+          disabled={!is_staff}
+        >
+          Add
+          <Plus />
+        </Button>
+      </div>
       {isLoading || isRefetching ? (
         <div className="flex h-full w-full items-center justify-center ">
           <Loader className="h-10 w-10" />
         </div>
       ) : (
         <div className="no-scrollbar h-full w-full space-y-2 overflow-auto p-5">
-          <div className="flex flex-col items-start justify-between gap-3 md:flex-row md:items-center md:gap-5">
-            <Input
-              placeholder="Search for a movie (using django-filter in backend)"
-              value={searchQuery}
-              onChange={handleChange}
-              autoFocus
-            />
-
-            <Select
-              onValueChange={(value) => {
-                setOrderingQuery(value);
-              }}
-            >
-              <SelectTrigger className="w-full md:w-1/3">
-                <SelectValue placeholder="Order By" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="title">Title</SelectItem>
-                <SelectItem value="avg_rating">Rating Ascending</SelectItem>
-                <SelectItem value="-avg_rating">Rating Desceding</SelectItem>
-                <SelectItem value="genre">Genre</SelectItem>
-                <SelectItem value="release_year">Release Year (Asc)</SelectItem>
-                <SelectItem value="-release_year">
-                  Release Year (Desc)
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <Button
-              onClick={() => {
-                setIsAddMovieDialogOpen(true);
-              }}
-              disabled={!is_staff}
-            >
-              Add
-              <Plus />
-            </Button>
-          </div>
           <AddMovieDialog
             isAddMoiveDialogOpen={isAddMoiveDialogOpen}
             setIsAddMovieDialogOpen={setIsAddMovieDialogOpen}
